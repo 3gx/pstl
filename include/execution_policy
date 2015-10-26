@@ -1,0 +1,14 @@
+#pragma once
+
+#include <type_traits>
+#include <typeinfo>
+
+namespace std          {
+namespace experimental {
+namespace parallel     {
+inline namespace v1    {
+
+}
+}
+}
+}

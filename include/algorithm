@@ -1,0 +1,18 @@
+#pragma once
+
+#ifndef _N4409_PARALLELSTL
+#define _N4409_PARALLELSTL
+#endif
+
+#include <execution_policy>
+
+namespace std          {
+namespace experimental {
+namespace parallel     {
+inline namespace v1    {
+
+}
+}
+}
+}
+
