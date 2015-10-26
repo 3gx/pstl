@@ -1,0 +1,30 @@
+#pragma once
+
+#ifndef _N4409_PARALLELSTL
+#define _N4409_PARALLELSTL
+#endif
+
+#include <experimental/execution_policy>
+
+namespace std          {
+namespace experimental {
+namespace parallel     {
+inline namespace v1    {
+ 
+template<class ExecutionPolicy, class InputIterator, class Function>
+typename __enable_if_execution_policy<ExecutionPolicy,InputIterator>::type
+auto for_each(ExecutionPolicy &&exec, InputIterator first, InputIterator last, Function f) ->
+decltype(typename std::decay<ExecutionPolicy>::type::for_each(first,last,f))
+{
+    using ExecutionPolicy_t = typename std::decay<ExecutionPolicy>::type;
+    return ExecutionPolicy_t::for_each(first, last, f);
+}
+
+}
+}
+}
+}
+
+#include <experimental/parallel/detail/sequential_policy.h>
+#include <experimental/parallel/detail/parallel_policy.h>
+
