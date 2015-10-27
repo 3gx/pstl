@@ -77,12 +77,14 @@ class policy_union
         }
 
 
+#if 0
         template<class InputIterator, class Function>
         void for_each( InputIterator first, InputIterator last, Function f) const 
         {
             if (is_seq()) return __for_each(seq_, first, last, f);
             if (is_par()) return __for_each(par_, first, last, f);
         }
+#endif
 };
 
 class execution_policy
@@ -127,7 +129,8 @@ class execution_policy
         template<class InputIterator, class Function>
         friend void __for_each(const execution_policy &exec, InputIterator first, InputIterator last, Function f)
         {
-            exec.policy_.for_each(first,last,f);
+            if (exec.policy_.is_seq()) __for_each(exec.get<sequential_execution_policy>, first, last, f);
+            if (exec.policy_.is_par()) __for_each(exec.get<parallel_execution_policy>, first, last, f);
         }
 
 };
