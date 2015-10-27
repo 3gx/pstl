@@ -4,7 +4,7 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
-class policy_union
+class policy_dispatch
 {
     friend class execution_policy;
     private:
@@ -19,8 +19,8 @@ class policy_union
         } policy_;
 
     public:
-        policy_union(const sequential_execution_policy& seq) : seq_(seq), policy_(policy_type::SEQ) {}
-        policy_union(const parallel_execution_policy&   par) : par_(par), policy_(policy_type::PAR) {}
+        policy_dispatch(const sequential_execution_policy& seq) : seq_(seq), policy_(policy_type::SEQ) {}
+        policy_dispatch(const parallel_execution_policy&   par) : par_(par), policy_(policy_type::PAR) {}
 
         bool is_seq() const { return policy_ == policy_type::SEQ; }
         bool is_par() const { return policy_ == policy_type::PAR; }
@@ -36,8 +36,8 @@ class policy_union
         typename enable_if<is_execution_policy<ExecutionPolicy>::value, const ExecutionPolicy*>::type
         get()  const __NOEXCEPT
         {
-            ExecutionPolicy* dummy;
-            return get_helper(*dummy);
+            ExecutionPolicy* dummy = nullptr;
+            return get_helper(dummy);
         }
 
         /* sequential_execution_policy */
@@ -49,9 +49,9 @@ class policy_union
         {
             return is_seq() ? &seq_ : nullptr;
         }
-        policy_union& operator=(const sequential_execution_policy& seq)
+        policy_dispatch& operator=(const sequential_execution_policy& seq)
         {
-            *this = policy_union(seq);
+            *this = policy_dispatch(seq);
             return *this;
         }
 
@@ -64,9 +64,9 @@ class policy_union
         {
             return is_par() ? &par_ : nullptr;
         }
-        policy_union& operator=(const parallel_execution_policy& par)
+        policy_dispatch& operator=(const parallel_execution_policy& par)
         {
-            *this   = policy_union(par);
+            *this   = policy_dispatch(par);
             return *this;
         }
 
@@ -74,23 +74,21 @@ class policy_union
         {
             if (is_seq()) return typeid(sequential_execution_policy);
             if (is_par()) return typeid(parallel_execution_policy);
+            return typeid(nullptr);
         }
 
-
-#if 0
         template<class InputIterator, class Function>
         void for_each( InputIterator first, InputIterator last, Function f) const 
         {
             if (is_seq()) return __for_each(seq_, first, last, f);
             if (is_par()) return __for_each(par_, first, last, f);
         }
-#endif
 };
 
 class execution_policy
 {
     private:
-        policy_union policy_;
+        policy_dispatch policy_;
     public:
         // 2.7.1, execution_policy construct/assign
         template<class ExecutionPolicy> 
@@ -129,8 +127,7 @@ class execution_policy
         template<class InputIterator, class Function>
         friend void __for_each(const execution_policy &exec, InputIterator first, InputIterator last, Function f)
         {
-            if (exec.policy_.is_seq()) __for_each(exec.get<sequential_execution_policy>, first, last, f);
-            if (exec.policy_.is_par()) __for_each(exec.get<parallel_execution_policy>, first, last, f);
+            exec.policy_.for_each(first, last, f);
         }
 
 };
