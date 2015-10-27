@@ -122,9 +122,9 @@ class execution_policy
         // algorithm dispatch
         //
         template<class Functor, class... Args>
-        friend void dispatch(const Functor&, const execution_policy &exec, Args&&... args)
+        friend void dispatch(Functor&& f, const execution_policy &exec, Args&&... args)
         {
-            exec.policy_.dispatch(Functor{}, std::forward<Args>(args)...);
+            exec.policy_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
         }
 
 };
