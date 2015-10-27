@@ -7,6 +7,27 @@
 #define __NOEXCEPT noexcept
 
 
+namespace std          {
+namespace experimental {
+namespace parallel     {
+inline namespace v1    {
+
+namespace detail
+{
+    struct for_each
+    {
+        template<class ExecutionPolicy, class InputOperator, class Function>
+        void operator()(const ExecutionPolicy &exec, InputOperator first, InputOperator last, Function f) const
+        {
+            __for_each(exec, first, last, f);
+        }
+    };
+}
+
+}
+}
+}
+}
 #include <experimental/parallel/execution_policy>
 #include <experimental/parallel/detail/sequential_policy.hpp>
 #include <experimental/parallel/detail/parallel_policy.hpp>
@@ -18,11 +39,12 @@ namespace parallel     {
 inline namespace v1    {
 
 
+
 template<class ExecutionPolicy, class InputIterator, class Function>
 typename __enable_if_execution_policy<ExecutionPolicy>::type  
 for_each(ExecutionPolicy &&exec, InputIterator first, InputIterator last, Function f)
 {
-    __for_each(std::forward<ExecutionPolicy>(exec), first, last, f);
+    detail::for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
 }
 
 const static sequential_execution_policy seq{};

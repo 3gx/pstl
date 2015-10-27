@@ -67,11 +67,11 @@ class dynamic_policy
             return typeid(nullptr);
         }
 
-        template<class InputIterator, class Function>
-        void for_each( InputIterator first, InputIterator last, Function f) const 
+        template<class Functor, class... Args>
+        auto dispatch(Functor f, Args... args) const -> decltype(f(seq_, args...))
         {
-            if (is_seq()) return __for_each(seq_, first, last, f);
-            if (is_par()) return __for_each(par_, first, last, f);
+            if (is_seq()) return f(seq_, args...);
+            if (is_par()) return f(par_, args...);
         }
 };
 
@@ -117,7 +117,7 @@ class execution_policy
         template<class InputIterator, class Function>
         friend void __for_each(const execution_policy &exec, InputIterator first, InputIterator last, Function f)
         {
-            exec.policy_.for_each(first, last, f);
+            exec.policy_.dispatch(detail::for_each{}, first, last, f);
         }
 
 };
