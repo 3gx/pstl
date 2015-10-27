@@ -4,20 +4,25 @@
 #define _N4409_PARALLELSTL
 #endif
 
+#define __NOEXCEPT noexcept
+
+
 #include <experimental/parallel/execution_policy>
 #include <experimental/parallel/detail/sequential_policy.hpp>
 #include <experimental/parallel/detail/parallel_policy.hpp>
+#include <experimental/parallel/detail/dynamic_policy.hpp>
 
 namespace std          {
 namespace experimental {
 namespace parallel     {
 inline namespace v1    {
- 
+
+
 template<class ExecutionPolicy, class InputIterator, class Function>
-auto for_each(ExecutionPolicy &&exec, InputIterator first, InputIterator last, Function f) ->
-typename __enable_if_execution_policy<ExecutionPolicy>::type
+typename __enable_if_execution_policy<ExecutionPolicy>::type  
+for_each(ExecutionPolicy &&exec, InputIterator first, InputIterator last, Function f)
 {
-    decay_t<ExecutionPolicy>::for_each(first, last, f);
+    __for_each(std::forward<ExecutionPolicy>(exec), first, last, f);
 }
 
 const static sequential_execution_policy seq{};

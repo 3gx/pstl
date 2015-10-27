@@ -13,7 +13,9 @@ inline namespace v1    {
 
 // 2.3, Execution policy type trait
 template<class T> struct is_execution_policy : false_type {};
+#if 0
 template<class T> constexpr bool is_execution_policy_v = is_execution_policy<T>::value;
+#endif
 
 // 2.4, Sequential execution policy
 class sequential_execution_policy;
@@ -43,11 +45,12 @@ template<> struct is_execution_policy<gpu_execution_policy> : true_type {};
 
 // 2.7, Dynamic execution policy
 class execution_policy;
+template<> struct is_execution_policy<execution_policy> : true_type {};
 
 
 template<class ExecutionPolicy, class Result = void>
 struct __enable_if_execution_policy : enable_if<
-                                      is_execution_policy_v<typename std::decay<ExecutionPolicy>::type>,
+                                      is_execution_policy<typename std::decay<ExecutionPolicy>::type>::value,
                                       Result>
 {};
 

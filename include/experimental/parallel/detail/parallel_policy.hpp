@@ -11,7 +11,7 @@ inline namespace v1    {
 struct parallel_execution_policy
 {
     template<class InputIterator, class Function>
-    static void for_each(InputIterator first, InputIterator last, Function f)
+    friend void __for_each(const parallel_execution_policy &par, InputIterator first, InputIterator last, Function f) 
     {
         __gnu_parallel::for_each(first, last, f);
     }

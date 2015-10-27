@@ -9,10 +9,10 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
-struct sequential_execution_policy
+class sequential_execution_policy
 {
     template<class InputIterator, class Function>
-    static void for_each(InputIterator first, InputIterator last, Function f)
+    friend void __for_each(const sequential_execution_policy &seq, InputIterator first, InputIterator last, Function f) 
     {
         std::for_each(first, last, f);
     }
