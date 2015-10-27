@@ -13,6 +13,8 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
+// for_each
+//
 namespace details
 {
     struct for_each
@@ -23,7 +25,18 @@ namespace details
             dispatch(*this, std::forward<ExecutionPolicy>(exec), first, last, f);
         }
     };
+}
+template<class ExecutionPolicy, class InputIterator, class Function>
+typename __enable_if_execution_policy<ExecutionPolicy>::type  
+for_each(ExecutionPolicy &&exec, InputIterator first, InputIterator last, Function f)
+{
+    details::for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
+}
 
+// sort
+//
+namespace details
+{
     struct sort
     {
         template<class ExecutionPolicy, class RandomIt>
@@ -34,21 +47,13 @@ namespace details
     };
 }
 
-
-
-template<class ExecutionPolicy, class InputIterator, class Function>
-typename __enable_if_execution_policy<ExecutionPolicy>::type  
-for_each(ExecutionPolicy &&exec, InputIterator first, InputIterator last, Function f)
-{
-    details::for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
-}
-
 template<class ExecutionPolicy, class RandomIt>
 typename __enable_if_execution_policy<ExecutionPolicy>::type  
 sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
 {
     details::sort{}(std::forward<ExecutionPolicy>(exec), first, last);
 }
+
 
 }
 }
