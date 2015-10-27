@@ -68,10 +68,10 @@ class dynamic_policy
         }
 
         template<class Functor, class... Args>
-        auto dispatch(Functor f, Args... args) const -> decltype(f(seq_, args...))
+        auto dispatch(Functor f, Args&&... args) const -> decltype(f(seq_, std::forward<Args>(args)...))
         {
-            if (is_seq()) return f(seq_, args...);
-            if (is_par()) return f(par_, args...);
+            if (is_seq()) return f(seq_, std::forward<Args>(args)...);
+            if (is_par()) return f(par_, std::forward<Args>(args)...);
             return f(seq_, args...);
         }
 };
@@ -115,11 +115,10 @@ class execution_policy
 
         // algorithm dispatch
         //
-        template<class Algorithm, class InputIterator, class Function>
-        friend void dispatch(const Algorithm&, const execution_policy &exec, 
-                             InputIterator first, InputIterator last, Function f) 
+        template<class Algorithm, class... Args>
+        friend void dispatch(const Algorithm&, const execution_policy &exec, Args&&... args)
         {
-            exec.policy_.dispatch(Algorithm{}, first, last, f);
+            exec.policy_.dispatch(Algorithm{}, std::forward<Args>(args)...);
         }
 
 };
