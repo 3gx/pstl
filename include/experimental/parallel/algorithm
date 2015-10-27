@@ -14,28 +14,6 @@ inline namespace v1    {
 
 namespace details
 {
-    struct for_each;
-    struct sort;
-}
-
-
-}
-}
-}
-}
-
-#include <experimental/parallel/execution_policy>
-#include <experimental/parallel/details/sequential_policy.hpp>
-#include <experimental/parallel/details/parallel_policy.hpp>
-#include <experimental/parallel/details/dynamic_policy.hpp>
-
-namespace std          {
-namespace experimental {
-namespace parallel     {
-inline namespace v1    {
-
-namespace details
-{
     struct for_each
     {
         template<class ExecutionPolicy, class InputOperator, class Function>
@@ -54,6 +32,22 @@ namespace details
         }
     };
 }
+
+}
+}
+}
+}
+
+#include <experimental/parallel/execution_policy>
+#include <experimental/parallel/details/sequential_policy.hpp>
+#include <experimental/parallel/details/parallel_policy.hpp>
+#include <experimental/parallel/details/dynamic_policy.hpp>
+
+namespace std          {
+namespace experimental {
+namespace parallel     {
+inline namespace v1    {
+
 
 
 
