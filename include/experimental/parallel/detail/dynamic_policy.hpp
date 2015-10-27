@@ -49,11 +49,6 @@ class policy_dispatch
         {
             return is_seq() ? &seq_ : nullptr;
         }
-        policy_dispatch& operator=(const sequential_execution_policy& seq)
-        {
-            *this = policy_dispatch(seq);
-            return *this;
-        }
 
         /* parallel_execution_policy */
         parallel_execution_policy* get_helper(parallel_execution_policy*) __NOEXCEPT
@@ -63,11 +58,6 @@ class policy_dispatch
         const parallel_execution_policy* get_helper(parallel_execution_policy*) const __NOEXCEPT
         {
             return is_par() ? &par_ : nullptr;
-        }
-        policy_dispatch& operator=(const parallel_execution_policy& par)
-        {
-            *this   = policy_dispatch(par);
-            return *this;
         }
 
         const type_info& type() const __NOEXCEPT
