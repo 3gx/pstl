@@ -27,7 +27,7 @@ namespace details
 #include <experimental/parallel/execution_policy>
 #include <experimental/parallel/details/sequential_policy.hpp>
 #include <experimental/parallel/details/parallel_policy.hpp>
- #include <experimental/parallel/details/dynamic_policy.hpp>
+#include <experimental/parallel/details/dynamic_policy.hpp>
 
 namespace std          {
 namespace experimental {
