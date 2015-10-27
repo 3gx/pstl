@@ -17,6 +17,13 @@ class sequential_execution_policy
     {
         std::for_each(first, last, f);
     }
+
+    template<class RandomIt>
+    friend void dispatch(const detail::sort&, const sequential_execution_policy &seq,
+                         RandomIt first, RandomIt last)
+    {
+        std::sort(first, last);
+    }
 };
 
 

@@ -17,6 +17,13 @@ class parallel_execution_policy
     {
         __gnu_parallel::for_each(first, last, f);
     }
+
+    template<class RandomIt>
+    friend void dispatch(const detail::sort&, const parallel_execution_policy &seq,
+                         RandomIt first, RandomIt last)
+    {
+        __gnu_parallel::sort(first, last);
+    }
 };
 
 
@@ -40,6 +47,13 @@ class parallel_execution_policy
                          InputIterator first, InputIterator last, Function f) 
     {
         std::for_each(first, last, f);
+    }
+    
+    template<class RandomIt>
+    friend void dispatch(const detail::sort&, const parallel_execution_policy &seq,
+                         RandomIt first, RandomIt last)
+    {
+        std::sort(first, last);
     }
 };
 

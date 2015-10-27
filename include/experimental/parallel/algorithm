@@ -15,6 +15,7 @@ inline namespace v1    {
 namespace detail
 {
     struct for_each;
+    struct sort;
 }
 
 
@@ -42,6 +43,15 @@ namespace detail
             dispatch(*this, exec, first, last, f);
         }
     };
+
+    struct sort
+    {
+        template<class ExecutionPolicy, class RandomIt>
+        void operator()(const ExecutionPolicy &exec, RandomIt first, RandomIt last) const
+        {
+            dispatch(*this, exec, first, last);
+        }
+    };
 }
 
 
@@ -53,6 +63,12 @@ for_each(ExecutionPolicy &&exec, InputIterator first, InputIterator last, Functi
     detail::for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
 }
 
+template<class ExecutionPolicy, class RandomIt>
+typename __enable_if_execution_policy<ExecutionPolicy>::type  
+sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
+{
+    detail::sort{}(std::forward<ExecutionPolicy>(exec), first, last);
+}
 const static sequential_execution_policy seq{};
 const static parallel_execution_policy par{};
 
