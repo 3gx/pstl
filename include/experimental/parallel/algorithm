@@ -12,7 +12,7 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
-namespace detail
+namespace details
 {
     struct for_each;
     struct sort;
@@ -23,17 +23,18 @@ namespace detail
 }
 }
 }
+
 #include <experimental/parallel/execution_policy>
-#include <experimental/parallel/detail/sequential_policy.hpp>
-#include <experimental/parallel/detail/parallel_policy.hpp>
- #include <experimental/parallel/detail/dynamic_policy.hpp>
+#include <experimental/parallel/details/sequential_policy.hpp>
+#include <experimental/parallel/details/parallel_policy.hpp>
+ #include <experimental/parallel/details/dynamic_policy.hpp>
 
 namespace std          {
 namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
-namespace detail
+namespace details
 {
     struct for_each
     {
@@ -60,14 +61,14 @@ template<class ExecutionPolicy, class InputIterator, class Function>
 typename __enable_if_execution_policy<ExecutionPolicy>::type  
 for_each(ExecutionPolicy &&exec, InputIterator first, InputIterator last, Function f)
 {
-    detail::for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
+    details::for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
 }
 
 template<class ExecutionPolicy, class RandomIt>
 typename __enable_if_execution_policy<ExecutionPolicy>::type  
 sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
 {
-    detail::sort{}(std::forward<ExecutionPolicy>(exec), first, last);
+    details::sort{}(std::forward<ExecutionPolicy>(exec), first, last);
 }
 const static sequential_execution_policy seq{};
 const static parallel_execution_policy par{};
