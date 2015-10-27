@@ -26,7 +26,7 @@ class sequential_execution_policy
     }
 };
 
-
+const static sequential_execution_policy seq{};
 
 }
 }

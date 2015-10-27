@@ -6,6 +6,7 @@
 
 #define __NOEXCEPT noexcept
 
+#include <experimental/parallel/execution_policy>
 
 namespace std          {
 namespace experimental {
@@ -33,22 +34,6 @@ namespace details
     };
 }
 
-}
-}
-}
-}
-
-#include <experimental/parallel/execution_policy>
-#include <experimental/parallel/details/sequential_policy.hpp>
-#include <experimental/parallel/details/parallel_policy.hpp>
-#include <experimental/parallel/details/dynamic_policy.hpp>
-
-namespace std          {
-namespace experimental {
-namespace parallel     {
-inline namespace v1    {
-
-
 
 
 template<class ExecutionPolicy, class InputIterator, class Function>
@@ -64,12 +49,13 @@ sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
 {
     details::sort{}(std::forward<ExecutionPolicy>(exec), first, last);
 }
-const static sequential_execution_policy seq{};
-const static parallel_execution_policy par{};
 
 }
 }
 }
 }
 
+#include <experimental/parallel/details/sequential_policy.hpp>
+#include <experimental/parallel/details/parallel_policy.hpp>
+#include <experimental/parallel/details/dynamic_policy.hpp>
 
