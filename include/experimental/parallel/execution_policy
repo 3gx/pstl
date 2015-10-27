@@ -38,7 +38,7 @@ template<> struct is_execution_policy<parallel_vector_execution_policy> : true_t
 #endif
 
 #if 0
-// 2.6, Parallel+Vector execution policy
+// 2.6a, GPU execution policy
 class gpu_execution_policy;
 template<> struct is_execution_policy<gpu_execution_policy> : true_type {};
 #endif
