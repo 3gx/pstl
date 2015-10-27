@@ -4,7 +4,9 @@
 #define _N4409_PARALLELSTL
 #endif
 
-#include <experimental/execution_policy>
+#include <experimental/parallel/execution_policy>
+#include <experimental/parallel/detail/sequential_policy.hpp>
+#include <experimental/parallel/detail/parallel_policy.hpp>
 
 namespace std          {
 namespace experimental {
@@ -12,19 +14,18 @@ namespace parallel     {
 inline namespace v1    {
  
 template<class ExecutionPolicy, class InputIterator, class Function>
-typename __enable_if_execution_policy<ExecutionPolicy,InputIterator>::type
 auto for_each(ExecutionPolicy &&exec, InputIterator first, InputIterator last, Function f) ->
-decltype(typename std::decay<ExecutionPolicy>::type::for_each(first,last,f))
+typename __enable_if_execution_policy<ExecutionPolicy>::type
 {
-    using ExecutionPolicy_t = typename std::decay<ExecutionPolicy>::type;
-    return ExecutionPolicy_t::for_each(first, last, f);
+    decay_t<ExecutionPolicy>::for_each(first, last, f);
 }
+
+const static sequential_execution_policy seq{};
+const static parallel_execution_policy par{};
 
 }
 }
 }
 }
 
-#include <experimental/parallel/detail/sequential_policy.h>
-#include <experimental/parallel/detail/parallel_policy.h>
 

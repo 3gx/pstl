@@ -12,33 +12,33 @@ namespace parallel     {
 inline namespace v1    {
 
 // 2.3, Execution policy type trait
-template<class T> struct is_execution_policy : false_type {}
+template<class T> struct is_execution_policy : false_type {};
 template<class T> constexpr bool is_execution_policy_v = is_execution_policy<T>::value;
 
 // 2.4, Sequential execution policy
 class sequential_execution_policy;
-template<> struct is_execution_policy<sequential_execution_policy> : true_type {}
+template<> struct is_execution_policy<sequential_execution_policy> : true_type {};
 
 #if 0
 // 2.4a, Vector execution policy
 class vector_execution_policy;
-template<> struct is_execution_policy<vector_execution_policy> : true_type {}
+template<> struct is_execution_policy<vector_execution_policy> : true_type {};
 #endif 
 
 // 2.5, Parallel execution policy
 class parallel_execution_policy;
-template<> struct is_execution_policy<parallel_execution_policy> : true_type {}
+template<> struct is_execution_policy<parallel_execution_policy> : true_type {};
 
 #if 0
 // 2.6, Parallel+Vector execution policy
 class parallel_vector_execution_policy;
-template<> struct is_execution_policy<parallel_vector_execution_policy> : true_type {}
+template<> struct is_execution_policy<parallel_vector_execution_policy> : true_type {};
 #endif
 
 #if 0
 // 2.6, Parallel+Vector execution policy
 class gpu_execution_policy;
-template<> struct is_execution_policy<gpu_execution_policy> : true_type {}
+template<> struct is_execution_policy<gpu_execution_policy> : true_type {};
 #endif
 
 // 2.7, Dynamic execution policy
