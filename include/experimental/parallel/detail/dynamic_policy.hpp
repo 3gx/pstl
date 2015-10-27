@@ -29,7 +29,7 @@ class dynamic_policy
         typename enable_if<is_execution_policy<ExecutionPolicy>::value, ExecutionPolicy*>::type
         get()  __NOEXCEPT
         {
-            ExecutionPolicy* dummy;
+            ExecutionPolicy* dummy = nullptr;
             return get_helper(*dummy);
         }
         template<class ExecutionPolicy>
