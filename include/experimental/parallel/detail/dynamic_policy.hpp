@@ -6,12 +6,11 @@ inline namespace v1    {
 
 class dynamic_policy
 {
-    friend class execution_policy;
     private:
         union 
         {
             sequential_execution_policy seq_;
-            parallel_execution_policy par_;
+            parallel_execution_policy   par_;
         };
         enum class policy_type
         {
@@ -67,14 +66,14 @@ class dynamic_policy
         const type_info& type() const __NOEXCEPT
         {
             if (is_seq()) return typeid(sequential_execution_policy);
-            if (is_par()) return typeid(parallel_execution_policy);
+            if (is_par()) return typeid(  parallel_execution_policy);
             return typeid(nullptr);
         }
 
         // algorithm dispatch
         //
         template<class Functor, class... Args>
-        auto dispatch(Functor f, Args&&... args) const -> decltype(f(seq_, std::forward<Args>(args)...))
+        auto dispatch(Functor&& f, Args&&... args) const -> decltype(f(seq_, std::forward<Args>(args)...))
         {
             if (is_seq()) return f(seq_, std::forward<Args>(args)...);
             if (is_par()) return f(par_, std::forward<Args>(args)...);
