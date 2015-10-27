@@ -40,7 +40,8 @@ class dynamic_policy
             return get_helper(dummy);
         }
 
-        /* sequential_execution_policy */
+        // sequential_execution_policy  get_helper
+        //
         sequential_execution_policy* get_helper(sequential_execution_policy*) __NOEXCEPT
         {
             return is_seq() ? &seq_ : nullptr;
@@ -50,7 +51,8 @@ class dynamic_policy
             return is_seq() ? &seq_ : nullptr;
         }
 
-        /* parallel_execution_policy */
+        // parallel_execution_policy  get_helper
+        //
         parallel_execution_policy* get_helper(parallel_execution_policy*) __NOEXCEPT
         {
             return is_par() ? &par_ : nullptr;
@@ -60,6 +62,8 @@ class dynamic_policy
             return is_par() ? &par_ : nullptr;
         }
 
+        // type information
+        //
         const type_info& type() const __NOEXCEPT
         {
             if (is_seq()) return typeid(sequential_execution_policy);
@@ -67,6 +71,8 @@ class dynamic_policy
             return typeid(nullptr);
         }
 
+        // algorithm dispatch
+        //
         template<class Functor, class... Args>
         auto dispatch(Functor f, Args&&... args) const -> decltype(f(seq_, std::forward<Args>(args)...))
         {
@@ -115,10 +121,10 @@ class execution_policy
 
         // algorithm dispatch
         //
-        template<class Algorithm, class... Args>
-        friend void dispatch(const Algorithm&, const execution_policy &exec, Args&&... args)
+        template<class Functor, class... Args>
+        friend void dispatch(const Functor&, const execution_policy &exec, Args&&... args)
         {
-            exec.policy_.dispatch(Algorithm{}, std::forward<Args>(args)...);
+            exec.policy_.dispatch(Functor{}, std::forward<Args>(args)...);
         }
 
 };
