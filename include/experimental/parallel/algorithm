@@ -14,15 +14,9 @@ inline namespace v1    {
 
 namespace detail
 {
-    struct for_each
-    {
-        template<class ExecutionPolicy, class InputOperator, class Function>
-        void operator()(const ExecutionPolicy &exec, InputOperator first, InputOperator last, Function f) const
-        {
-            __for_each(exec, first, last, f);
-        }
-    };
+    struct for_each;
 }
+
 
 }
 }
@@ -31,12 +25,24 @@ namespace detail
 #include <experimental/parallel/execution_policy>
 #include <experimental/parallel/detail/sequential_policy.hpp>
 #include <experimental/parallel/detail/parallel_policy.hpp>
-#include <experimental/parallel/detail/dynamic_policy.hpp>
+ #include <experimental/parallel/detail/dynamic_policy.hpp>
 
 namespace std          {
 namespace experimental {
 namespace parallel     {
 inline namespace v1    {
+
+namespace detail
+{
+    struct for_each
+    {
+        template<class ExecutionPolicy, class InputOperator, class Function>
+        void operator()(const ExecutionPolicy &exec, InputOperator first, InputOperator last, Function f) const
+        {
+            dispatch(*this, exec, first, last, f);
+        }
+    };
+}
 
 
 

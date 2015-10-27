@@ -72,6 +72,7 @@ class dynamic_policy
         {
             if (is_seq()) return f(seq_, args...);
             if (is_par()) return f(par_, args...);
+            return f(seq_, args...);
         }
 };
 
@@ -113,11 +114,12 @@ class execution_policy
         }
 
         // algorithm dispatch
-
-        template<class InputIterator, class Function>
-        friend void __for_each(const execution_policy &exec, InputIterator first, InputIterator last, Function f)
+        //
+        template<class Algorithm, class InputIterator, class Function>
+        friend void dispatch(const Algorithm&, const execution_policy &exec, 
+                             InputIterator first, InputIterator last, Function f) 
         {
-            exec.policy_.dispatch(detail::for_each{}, first, last, f);
+            exec.policy_.dispatch(Algorithm{}, first, last, f);
         }
 
 };
