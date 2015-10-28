@@ -33,8 +33,8 @@ for_each(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f)
 //
 struct __for_each_n {  
 template<class ExecutionPolicy, class InputIt, class... Args>  
-InputIt operator()(ExecutionPolicy &&exec, InputIt it, Args&&... args) const  { 
-    return dispatch(*this, std::forward<ExecutionPolicy>(exec), it, std::forward<Args>(args)...);  
+typename std::decay<InputIt>::type operator()(ExecutionPolicy &&exec, InputIt&& it, Args&&... args) const  { 
+    return dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<InputIt>(it), std::forward<Args>(args)...);  
 }};
 template<class ExecutionPolicy, class InputIt, class Size, class Unary>
 typename __enable_if_execution_policy<ExecutionPolicy, InputIt>::type  
@@ -67,5 +67,5 @@ sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
 
 #include <experimental/parallel/detail/sequential_policy.hpp>
 #include <experimental/parallel/detail/parallel_policy.hpp>
-#include <experimental/parallel/detail/dynamic_policy.hpp>
+ #include <experimental/parallel/detail/dynamic_policy.hpp>
 
