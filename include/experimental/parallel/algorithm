@@ -22,20 +22,23 @@ template<class ExecutionPolicy, class... Args>
 void operator()(ExecutionPolicy &&exec, Args&&... args) const  { 
     dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<Args>(args)...);  
 }};
+
+// for_each_n
+//
+struct __for_each_n {  
+template<class ExecutionPolicy, class... Args>  
+auto operator()(ExecutionPolicy &&exec, Args&&... args) const  ->
+decltype(dispatch(*this, std::declval<sequential_execution_policy>(), std::forward<Args>(args)...))
+{
+    return dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<Args>(args)...);  
+}};
+
 template<class ExecutionPolicy, class InputIt, class Unary>
 typename __enable_if_execution_policy<ExecutionPolicy>::type  
 for_each(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f)
 {
     __for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
 }
-
-// for_each_n
-//
-struct __for_each_n {  
-template<class ExecutionPolicy, class InputIt, class... Args>  
-typename std::decay<InputIt>::type operator()(ExecutionPolicy &&exec, InputIt&& it, Args&&... args) const  { 
-    return dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<InputIt>(it), std::forward<Args>(args)...);  
-}};
 template<class ExecutionPolicy, class InputIt, class Size, class Unary>
 typename __enable_if_execution_policy<ExecutionPolicy, InputIt>::type  
 for_each_n(ExecutionPolicy &&exec, InputIt first, Size n, Unary f)
