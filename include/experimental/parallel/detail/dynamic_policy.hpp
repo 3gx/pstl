@@ -123,8 +123,12 @@ class execution_policy
         // algorithm dispatch
         //
         template<class Functor, class... Args>
-        friend auto dispatch(Functor&& f, const execution_policy &exec, Args&&... args) ->
-        decltype(std::declval<dynamic_execution_policy>().dispatch(std::forward<Functor>(f), std::forward<Args>(args)...))
+        friend 
+        // with g++-5+ or clang++-3.6+, use this type deduction
+//        decltype(dispatch(declval<Functor>(), declval<sequential_execution_policy>(), declval<Args>()...))
+        auto
+        dispatch(Functor&& f, const execution_policy &exec, Args&&... args) 
+        -> decltype(std::declval<dynamic_execution_policy>().dispatch(std::forward<Functor>(f), std::forward<Args>(args)...))
         {
             return exec.policy_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
         }

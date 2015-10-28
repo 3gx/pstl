@@ -14,7 +14,6 @@ namespace parallel     {
 inline namespace v1    {
 
 
-
 // for_each
 //
 struct __for_each {  
@@ -22,9 +21,16 @@ template<class ExecutionPolicy, class... Args>
 void operator()(ExecutionPolicy &&exec, Args&&... args) const  { 
     dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<Args>(args)...);  
 }};
+template<class ExecutionPolicy, class InputIt, class Unary>
+typename __enable_if_execution_policy<ExecutionPolicy>::type  
+for_each(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f)
+{
+    __for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
+}
 
 // for_each_n
 //
+#if 0  // with g++-5+ or clang++-3.6+, use this dispatch mechanism.
 struct __for_each_n {  
 template<class ExecutionPolicy, class... Args>  
 auto operator()(ExecutionPolicy &&exec, Args&&... args) const  ->
@@ -32,13 +38,15 @@ decltype(dispatch(*this, std::declval<sequential_execution_policy>(), std::forwa
 {
     return dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<Args>(args)...);  
 }};
-
-template<class ExecutionPolicy, class InputIt, class Unary>
-typename __enable_if_execution_policy<ExecutionPolicy>::type  
-for_each(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f)
+#else
+struct __for_each_n {  
+template<class ExecutionPolicy, class InputIt, class... Args>  
+typename std::decay<InputIt>::type
+operator()(ExecutionPolicy &&exec, InputIt&& it, Args&&... args) const 
 {
-    __for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
-}
+    return dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<InputIt>(it), std::forward<Args>(args)...);  
+}};
+#endif
 template<class ExecutionPolicy, class InputIt, class Size, class Unary>
 typename __enable_if_execution_policy<ExecutionPolicy, InputIt>::type  
 for_each_n(ExecutionPolicy &&exec, InputIt first, Size n, Unary f)
@@ -61,7 +69,7 @@ sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
 }
 
 
-#undef DECLARE_ALGORITHM
+#undef __DECLARE_ALGO
 
 }
 }
