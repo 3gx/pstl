@@ -45,6 +45,7 @@ sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
 }
 #else
 
+#define __xDECLARE_PSTL(name) 
 #define __DECLARE_PSTL(name) \
 struct __##name{}; \
 template<class ExecutionPolicy, class... Args> \
@@ -57,11 +58,109 @@ name(ExecutionPolicy &&exec, Args&&... args) \
    return exec.dispatch(__##name{}, forward<Args>(args)...); \
 }
 
+//__DECLARE_PSTL(for_each)
+//__DECLARE_PSTL(for_each_n)
+//__DECLARE_PSTL(sort)
+
+__xDECLARE_PSTL(adjacent_difference)
+__xDECLARE_PSTL(adjacent_find)
+__xDECLARE_PSTL(all_of)
+__xDECLARE_PSTL(any_of)
+/////////////////////////////////////
+__xDECLARE_PSTL(copy)
+__xDECLARE_PSTL(copy_if)
+__xDECLARE_PSTL(copy_n)
+__xDECLARE_PSTL(count)
+/////////////////////////////////////
+__xDECLARE_PSTL(count_if)
+__xDECLARE_PSTL(equal)
+__xDECLARE_PSTL(exclusive_scan)
+__xDECLARE_PSTL(fill)
+/////////////////////////////////////
+__xDECLARE_PSTL(fill_n)
+__xDECLARE_PSTL(find)
+__xDECLARE_PSTL(find_end)
+__xDECLARE_PSTL(find_first_of)
+/////////////////////////////////////
+__xDECLARE_PSTL(find_if)
+__xDECLARE_PSTL(find_if_not)
 __DECLARE_PSTL(for_each)
 __DECLARE_PSTL(for_each_n)
+/////////////////////////////////////
+__xDECLARE_PSTL(generate)
+__xDECLARE_PSTL(generate_n)
+__xDECLARE_PSTL(includes)
+__xDECLARE_PSTL(inclusive_scan)
+/////////////////////////////////////
+__xDECLARE_PSTL(inner_product)
+__xDECLARE_PSTL(inplace_merge)
+__xDECLARE_PSTL(is_heap)
+__xDECLARE_PSTL(is_heap_until)
+/////////////////////////////////////
+__xDECLARE_PSTL(is_partitioned)
+__xDECLARE_PSTL(is_sorted)
+__xDECLARE_PSTL(is_sorted_until)
+__xDECLARE_PSTL(lexicographical_compare)
+/////////////////////////////////////
+__xDECLARE_PSTL(max_element)
+__xDECLARE_PSTL(merge)
+__xDECLARE_PSTL(min_element)
+__xDECLARE_PSTL(minmax_element)
+/////////////////////////////////////
+__xDECLARE_PSTL(mismatch)
+__xDECLARE_PSTL(move)
+__xDECLARE_PSTL(none_of)
+__xDECLARE_PSTL(nth_element)
+/////////////////////////////////////
+__xDECLARE_PSTL(partial_sort)
+__xDECLARE_PSTL(partial_sort_copy)
+__xDECLARE_PSTL(partition)
+__xDECLARE_PSTL(partition_copy)
+/////////////////////////////////////
+__xDECLARE_PSTL(reduce)
+__xDECLARE_PSTL(remove)
+__xDECLARE_PSTL(remove_copy)
+__xDECLARE_PSTL(remove_copy_if)
+/////////////////////////////////////
+__xDECLARE_PSTL(remove_if)
+__xDECLARE_PSTL(replace)
+__xDECLARE_PSTL(replace_copy)
+__xDECLARE_PSTL(replace_copy_if)
+/////////////////////////////////////
+__xDECLARE_PSTL(replace_if)
+__xDECLARE_PSTL(reverse)
+__xDECLARE_PSTL(reverse_copy)
+__xDECLARE_PSTL(rotate)
+/////////////////////////////////////
+__xDECLARE_PSTL(rotate_copy)
+__xDECLARE_PSTL(search)
+__xDECLARE_PSTL(search_n)
+__xDECLARE_PSTL(set_difference)
+/////////////////////////////////////
+__xDECLARE_PSTL(set_intersection)
+__xDECLARE_PSTL(set_symmetric_difference)
+__xDECLARE_PSTL(set_union)
 __DECLARE_PSTL(sort)
+/////////////////////////////////////
+__xDECLARE_PSTL(stable_partition)
+__xDECLARE_PSTL(stable_sort)
+__xDECLARE_PSTL(swap_ranges)
+__xDECLARE_PSTL(transform)
+/////////////////////////////////////
+__xDECLARE_PSTL(transform_exclusive_scan)
+__xDECLARE_PSTL(transform_inclusive_scan)
+__xDECLARE_PSTL(transform_reduce)
+__xDECLARE_PSTL(unintialized_copy)
+/////////////////////////////////////
+__xDECLARE_PSTL(uninitialized_copy_n)
+__xDECLARE_PSTL(uninitialized_fill)
+__xDECLARE_PSTL(uninitialized_fill_n)
+__xDECLARE_PSTL(unique)
+/////////////////////////////////////
+__xDECLARE_PSTL(unique_copy)
 
 #undef __DECLARE_PSTL
+#undef __xDECLARE_PSTL
 
 #endif
 
