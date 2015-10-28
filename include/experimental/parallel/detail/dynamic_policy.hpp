@@ -19,7 +19,7 @@ class dynamic_policy
 
     public:
         dynamic_policy(const sequential_execution_policy& seq) : seq_(seq), policy_(policy_type::SEQ) {}
-        dynamic_policy(const parallel_execution_policy&   par) : par_(par), policy_(policy_type::PAR) {}
+        dynamic_policy(const   parallel_execution_policy& par) : par_(par), policy_(policy_type::PAR) {}
 
         bool is_seq() const { return policy_ == policy_type::SEQ; }
         bool is_par() const { return policy_ == policy_type::PAR; }
