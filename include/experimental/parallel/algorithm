@@ -13,16 +13,18 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
-// for_each
-//
-struct __for_each
-{
-    template<class ExecutionPolicy, class InputIt, class Unary>
-    void operator()(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f) const
-    {
-        dispatch(*this, std::forward<ExecutionPolicy>(exec), first, last, f);
-    }
+#define DECLARE_ALGORITHM(name) \
+struct __##name \
+{ \
+    template<class ExecutionPolicy, class... Args> \
+    void operator()(ExecutionPolicy &&exec, Args&&... args) const \
+    { \
+        dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<Args>(args)...); \
+    } \
 };
+
+DECLARE_ALGORITHM(for_each)
+//------------------//
 template<class ExecutionPolicy, class InputIt, class Unary>
 typename __enable_if_execution_policy<ExecutionPolicy>::type  
 for_each(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f)
@@ -30,16 +32,8 @@ for_each(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f)
     __for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
 }
 
-// sort
-//
-struct __sort
-{
-    template<class ExecutionPolicy, class RandomIt>
-    void operator()(ExecutionPolicy &&exec, RandomIt first, RandomIt last) const
-    {
-        dispatch(*this, std::forward<ExecutionPolicy>(exec), first, last);
-    }
-};
+DECLARE_ALGORITHM(sort)
+//------------------//
 template<class ExecutionPolicy, class RandomIt>
 typename __enable_if_execution_policy<ExecutionPolicy>::type  
 sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
@@ -48,6 +42,7 @@ sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
 }
 
 
+#undef DECLARE_ALGORITHM
 
 }
 }
