@@ -126,7 +126,7 @@ class execution_policy
 // algorithm dispatch
 //
 template<class Functor, class... Args>
-auto dispatch(Functor&& f, const execution_policy &exec, Args&&... args) ->
+inline auto dispatch(Functor&& f, const execution_policy &exec, Args&&... args) ->
 decltype(exec.get_policy().dispatch(std::forward<Functor>(f), std::forward<Args>(args)...))
 {
     return exec.get_policy().dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);

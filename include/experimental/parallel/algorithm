@@ -67,5 +67,5 @@ sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
 
 #include <experimental/parallel/detail/sequential_policy.hpp>
 #include <experimental/parallel/detail/parallel_policy.hpp>
- #include <experimental/parallel/detail/dynamic_policy.hpp>
+#include <experimental/parallel/detail/dynamic_policy.hpp>
 
