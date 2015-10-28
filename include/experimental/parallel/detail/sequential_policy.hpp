@@ -14,7 +14,7 @@ struct sequential_execution_policy
     // for_each
     //
     template<class InputIterator, class Function>
-    void dispatch(const __for_each&, 
+    void dispatch(__for_each&&,
                   InputIterator first, InputIterator last, Function f)  const
     {
         std::for_each(first, last, f);
@@ -23,7 +23,7 @@ struct sequential_execution_policy
     // for_each_n
     //
     template<class InputIt, class Size, class Unary>
-    InputIt dispatch(const __for_each_n&,
+    InputIt dispatch(__for_each_n&&,
                      InputIt first, Size n, Unary f)  const
     {
         if (n < 0)
@@ -37,7 +37,7 @@ struct sequential_execution_policy
     // sort
     //
     template<class RandomIt>
-    void dispatch(const __sort&,
+    void dispatch(__sort&&,
                   RandomIt first, RandomIt last) const
     {
         std::sort(first, last);

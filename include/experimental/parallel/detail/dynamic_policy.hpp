@@ -67,19 +67,19 @@ class dynamic_execution_policy
         //
         const type_info& type() const __NOEXCEPT
         {
-            if (is_seq()) return typeid(sequential_execution_policy);
-            if (is_par()) return typeid(  parallel_execution_policy);
-            return typeid(nullptr);
+            if (is_par()) return typeid(parallel_execution_policy);
+            /* if (is_seq()) */
+                return typeid(sequential_execution_policy);
         }
 
         // algorithm dispatch
         //
         template<class Functor, class... Args>
-        auto dispatch(Functor&& f, Args&&... args) const -> decltype(seq_.dispatch(f, std::forward<Args>(args)...))
+        auto dispatch(Functor&& f, Args&&... args) const -> decltype(seq_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...))
         {
-            if (is_seq()) return seq_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
             if (is_par()) return par_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
-            return seq_.dispatch(f, args...);
+            /* if (is_seq()) */
+                return seq_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
         }
 };
 
@@ -123,11 +123,8 @@ class execution_policy
         // algorithm dispatch
         //
         template<class Functor, class... Args>
-        // with g++-5+ or clang++-3.6+, use this type deduction
-//        decltype(dispatch(declval<Functor>(), declval<sequential_execution_policy>(), declval<Args>()...))
-        auto
-        dispatch(Functor&& f, Args&&... args) 
-        -> decltype(std::declval<dynamic_execution_policy>().dispatch(std::forward<Functor>(f), std::forward<Args>(args)...))
+        auto dispatch(Functor&& f, Args&&... args)  ->
+        decltype(std::declval<sequential_execution_policy>().dispatch(std::forward<Functor>(f), std::forward<Args>(args)...))
         {
             return policy_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
         }
