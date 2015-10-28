@@ -75,11 +75,11 @@ class dynamic_execution_policy
         // algorithm dispatch
         //
         template<class Functor, class... Args>
-        auto dispatch(Functor&& f, Args&&... args) const -> decltype(seq_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...))
+        auto dispatch(Functor&& f, Args&&... args) const -> decltype(seq_.dispatch(forward<Functor>(f), forward<Args>(args)...))
         {
-            if (is_par()) return par_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
+            if (is_par()) return par_.dispatch(forward<Functor>(f), forward<Args>(args)...);
             /* if (is_seq()) */
-                return seq_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
+                return seq_.dispatch(forward<Functor>(f), forward<Args>(args)...);
         }
 };
 
@@ -124,9 +124,9 @@ class execution_policy
         //
         template<class Functor, class... Args>
         auto dispatch(Functor&& f, Args&&... args)  ->
-        decltype(std::declval<sequential_execution_policy>().dispatch(std::forward<Functor>(f), std::forward<Args>(args)...))
+        decltype(declval<sequential_execution_policy>().dispatch(forward<Functor>(f), forward<Args>(args)...))
         {
-            return policy_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
+            return policy_.dispatch(forward<Functor>(f), forward<Args>(args)...);
         }
 };
 
