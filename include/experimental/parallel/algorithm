@@ -27,9 +27,8 @@ for_each(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f)
 // for_each_n
 //
 struct __for_each_n{};
-template<class ExecutionPolicy, class InputIt, class Size, class Unary>
-typename __enable_if_execution_policy<ExecutionPolicy, InputIt>::type  
-for_each_n(ExecutionPolicy &&exec, InputIt first, Size n, Unary f)
+template<class ExecutionPolicy, class InputIt, class Size, class Unary, typename __enable_if_execution_policy<ExecutionPolicy, InputIt>::type* = nullptr>  
+InputIt for_each_n(ExecutionPolicy &&exec, InputIt first, Size n, Unary f)
 {
    return exec.dispatch(__for_each_n{}, first, n, f);
 }
