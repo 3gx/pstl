@@ -4,7 +4,7 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
-class dynamic_policy
+class dynamic_execution_policy
 {
     private:
         union 
@@ -18,8 +18,8 @@ class dynamic_policy
         } policy_;
 
     public:
-        dynamic_policy(const sequential_execution_policy& seq) : seq_(seq), policy_(policy_type::SEQ) {}
-        dynamic_policy(const   parallel_execution_policy& par) : par_(par), policy_(policy_type::PAR) {}
+        dynamic_execution_policy(const sequential_execution_policy& seq) : seq_(seq), policy_(policy_type::SEQ) {}
+        dynamic_execution_policy(const   parallel_execution_policy& par) : par_(par), policy_(policy_type::PAR) {}
 
         bool is_seq() const { return policy_ == policy_type::SEQ; }
         bool is_par() const { return policy_ == policy_type::PAR; }
@@ -84,7 +84,7 @@ class dynamic_policy
 class execution_policy
 {
     private:
-        dynamic_policy policy_;
+        dynamic_execution_policy policy_;
     public:
         // 2.7.1, execution_policy construct/assign
         template<class ExecutionPolicy> 
