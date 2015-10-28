@@ -20,6 +20,8 @@ class dynamic_execution_policy
     public:
         dynamic_execution_policy(const sequential_execution_policy& seq) : seq_(seq), policy_(policy_type::SEQ) {}
         dynamic_execution_policy(const   parallel_execution_policy& par) : par_(par), policy_(policy_type::PAR) {}
+        dynamic_execution_policy(const    dynamic_execution_policy&) = default;
+        dynamic_execution_policy& operator=(const dynamic_execution_policy&) = default;
 
         bool is_seq() const { return policy_ == policy_type::SEQ; }
         bool is_par() const { return policy_ == policy_type::PAR; }
