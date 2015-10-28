@@ -13,18 +13,15 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
-#define DECLARE_ALGORITHM(name) \
-struct __##name \
-{ \
-    template<class ExecutionPolicy, class... Args> \
-    void operator()(ExecutionPolicy &&exec, Args&&... args) const \
-    { \
-        dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<Args>(args)...); \
-    } \
-};
 
-DECLARE_ALGORITHM(for_each)
-//------------------//
+
+// for_each
+//
+struct __for_each {  
+template<class ExecutionPolicy, class... Args>  
+void operator()(ExecutionPolicy &&exec, Args&&... args) const  { 
+    dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<Args>(args)...);  
+}};
 template<class ExecutionPolicy, class InputIt, class Unary>
 typename __enable_if_execution_policy<ExecutionPolicy>::type  
 for_each(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f)
@@ -32,8 +29,27 @@ for_each(ExecutionPolicy &&exec, InputIt first, InputIt last, Unary f)
     __for_each{}(std::forward<ExecutionPolicy>(exec), first, last, f);
 }
 
-DECLARE_ALGORITHM(sort)
-//------------------//
+// for_each_n
+//
+struct __for_each_n {  
+template<class ExecutionPolicy, class InputIt, class... Args>  
+InputIt operator()(ExecutionPolicy &&exec, InputIt it, Args&&... args) const  { 
+    return dispatch(*this, std::forward<ExecutionPolicy>(exec), it, std::forward<Args>(args)...);  
+}};
+template<class ExecutionPolicy, class InputIt, class Size, class Unary>
+typename __enable_if_execution_policy<ExecutionPolicy, InputIt>::type  
+for_each_n(ExecutionPolicy &&exec, InputIt first, Size n, Unary f)
+{
+   return __for_each_n{}(std::forward<ExecutionPolicy>(exec), first, n, f);
+}
+
+// sort
+//
+struct __sort {  
+template<class ExecutionPolicy, class... Args>  
+void operator()(ExecutionPolicy &&exec, Args&&... args) const  { 
+    return dispatch(*this, std::forward<ExecutionPolicy>(exec), std::forward<Args>(args)...);  
+}};
 template<class ExecutionPolicy, class RandomIt>
 typename __enable_if_execution_policy<ExecutionPolicy>::type  
 sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)

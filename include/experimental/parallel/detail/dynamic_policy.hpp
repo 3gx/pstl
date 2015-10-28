@@ -120,15 +120,17 @@ class execution_policy
             return policy_.get<ExecutionPolicy>();
         }
 
-        // algorithm dispatch
-        //
-        template<class Functor, class... Args>
-        friend void dispatch(Functor&& f, const execution_policy &exec, Args&&... args)
-        {
-            exec.policy_.dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
-        }
-
+        const dynamic_execution_policy& get_policy() const { return policy_; }
 };
+
+// algorithm dispatch
+//
+template<class Functor, class... Args>
+auto dispatch(Functor&& f, const execution_policy &exec, Args&&... args) ->
+decltype(exec.get_policy().dispatch(std::forward<Functor>(f), std::forward<Args>(args)...))
+{
+    return exec.get_policy().dispatch(std::forward<Functor>(f), std::forward<Args>(args)...);
+}
 
 }
 }
