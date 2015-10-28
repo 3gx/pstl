@@ -14,6 +14,7 @@ namespace parallel     {
 inline namespace v1    {
 
 
+#if 0
 // for_each
 //
 struct __for_each {};
@@ -42,6 +43,27 @@ sort(ExecutionPolicy &&exec, RandomIt first, RandomIt last)
 {
     exec.dispatch(__sort{}, first, last);
 }
+#else
+
+#define __DECLARE_PSTL(name) \
+struct __##name{}; \
+template<class ExecutionPolicy, class... Args> \
+typename __enable_if_execution_policy< \
+    ExecutionPolicy, \
+    decltype(declval<ExecutionPolicy>().dispatch(__##name{}, declval<Args>()...)) \
+ >::type \
+name(ExecutionPolicy &&exec, Args&&... args) \
+{ \
+   return exec.dispatch(__##name{}, forward<Args>(args)...); \
+}
+
+__DECLARE_PSTL(for_each)
+__DECLARE_PSTL(for_each_n)
+__DECLARE_PSTL(sort)
+
+#undef __DECLARE_PSTL
+
+#endif
 
 
 
