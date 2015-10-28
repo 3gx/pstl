@@ -47,6 +47,19 @@ struct parallel_execution_policy
     {
         PARSPACE::sort(first, last);
     }
+
+    // mismatch
+    //
+    template<class InputIt1, class InputIt2>
+    pair<InputIt1, InputIt2> dispatch(__mismatch&&, InputIt1 first1, InputIt1 last, InputIt2 first2) const
+    {
+        return PARSPACE::mismatch(first1, last, first2);
+    }
+    template<class InputIt1, class InputIt2, class BinaryPredicate>
+    pair<InputIt1, InputIt2> dispatch(__mismatch&&, InputIt1 first1, InputIt1 last, InputIt2 first2, BinaryPredicate pred) const
+    {
+        return PARSPACE::mismatch(first1, last, first2, pred);
+    }
 };
 
 const static parallel_execution_policy par{};

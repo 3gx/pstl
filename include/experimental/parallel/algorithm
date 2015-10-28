@@ -107,7 +107,7 @@ __xDECLARE_PSTL(merge)
 __xDECLARE_PSTL(min_element)
 __xDECLARE_PSTL(minmax_element)
 /////////////////////////////////////
-__xDECLARE_PSTL(mismatch)
+__DECLARE_PSTL(mismatch)
 __xDECLARE_PSTL(move)
 __xDECLARE_PSTL(none_of)
 __xDECLARE_PSTL(nth_element)

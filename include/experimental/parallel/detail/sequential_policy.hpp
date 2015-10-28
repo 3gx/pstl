@@ -42,6 +42,22 @@ struct sequential_execution_policy
     {
         std::sort(first, last);
     }
+
+    // mismatch
+    //
+    template<class InputIt1, class InputIt2>
+    pair<InputIt1, InputIt2> dispatch(__mismatch&&,
+                                      InputIt1 first1, InputIt1 last, InputIt2 first2) const
+    {
+        return std::mismatch(first1, last, first2);
+    }
+    template<class InputIt1, class InputIt2, class BinaryPredicate>
+    pair<InputIt1, InputIt2> dispatch(__mismatch&&,
+                                      InputIt1 first1, InputIt1 last, InputIt2 first2, BinaryPredicate pred) const
+    {
+        return std::mismatch(first1, last, first2, pred);
+    }
+
 };
 
 const static sequential_execution_policy seq{};
