@@ -18,33 +18,33 @@ template<class T> constexpr bool is_execution_policy_v = is_execution_policy<T>:
 #endif
 
 // 2.4, Sequential execution policy
-class sequential_execution_policy;
+struct sequential_execution_policy;
 template<> struct is_execution_policy<sequential_execution_policy> : true_type {};
 
 #if 0
 // 2.4a, Vector execution policy
-class vector_execution_policy;
+struct vector_execution_policy;
 template<> struct is_execution_policy<vector_execution_policy> : true_type {};
 #endif 
 
 // 2.5, Parallel execution policy
-class parallel_execution_policy;
+struct parallel_execution_policy;
 template<> struct is_execution_policy<parallel_execution_policy> : true_type {};
 
 #if 0
 // 2.6, Parallel+Vector execution policy
-class parallel_vector_execution_policy;
+struct parallel_vector_execution_policy;
 template<> struct is_execution_policy<parallel_vector_execution_policy> : true_type {};
 #endif
 
 #if 0
 // 2.6a, GPU execution policy
-class gpu_execution_policy;
+struct gpu_execution_policy;
 template<> struct is_execution_policy<gpu_execution_policy> : true_type {};
 #endif
 
 // 2.7, Dynamic execution policy
-class execution_policy;
+struct execution_policy;
 template<> struct is_execution_policy<execution_policy> : true_type {};
 
 

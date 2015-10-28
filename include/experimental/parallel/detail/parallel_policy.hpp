@@ -14,13 +14,13 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
-class parallel_execution_policy
+struct parallel_execution_policy
 {
     // for_each
     //
     template<class InputIterator, class Function>
-    friend void dispatch(const __for_each&, const parallel_execution_policy &par, 
-                         InputIterator first, InputIterator last, Function f) 
+    void dispatch(__for_each&&,
+                  InputIterator first, InputIterator last, Function f)  const
     {
         PARSPACE::for_each(first, last, f);
     }
@@ -28,8 +28,8 @@ class parallel_execution_policy
     // for_each_n
     //
     template<class InputIt, class Size, class Unary>
-    friend InputIt dispatch(const __for_each_n&, const parallel_execution_policy &par,
-                         InputIt first, Size n, Unary f) 
+    InputIt dispatch(__for_each_n&&,
+                     InputIt first, Size n, Unary f)  const
     {
         if (n < 0)
             return first;
@@ -42,8 +42,8 @@ class parallel_execution_policy
     // sort
     //
     template<class RandomIt>
-    friend void dispatch(const __sort&, const parallel_execution_policy &par,
-                         RandomIt first, RandomIt last)
+    void dispatch(__sort&&,
+                  RandomIt first, RandomIt last) const
     {
         PARSPACE::sort(first, last);
     }
