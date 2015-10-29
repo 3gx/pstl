@@ -18,12 +18,12 @@ struct __constexpr_max<i>
 };
 
 
-template<class... Policies>
+template<class DefaultPolicy, class... Policies>
 class __dynamic_execution_policy
 {
     private:
         typedef typename std::aligned_storage<
-            __constexpr_max<sizeof(Policies)...>::value
+            __constexpr_max<sizeof(DefaultPolicy), sizeof(Policies)...>::value
             >::type policy_storage_type;
         policy_storage_type policy_storage_;
         const type_info *policy_type_;
@@ -68,18 +68,21 @@ class __dynamic_execution_policy
         }
 
     private:
+
+        // algorithm dispatch : loop over policies to detect the one that needs to be dispatched
+        //
         template<class...>
         struct policies_placeholder{};
 
         template<class... Args>
-        decltype(declval<sequential_execution_policy>().dispatch(declval<Args>()...))
+        decltype(declval<DefaultPolicy>().dispatch(declval<Args>()...))
         dispatch(policies_placeholder<>&&, Args&&... args) const 
         {
-            return get<sequential_execution_policy>()->dispatch(forward<Args>(args)...);
+            return get<DefaultPolicy>()->dispatch(forward<Args>(args)...);
         }
 
         template<class ExecutionPolicy, class... Execs, class... Args>
-        decltype(declval<sequential_execution_policy>().dispatch(declval<Args>()...))
+        decltype(declval<DefaultPolicy>().dispatch(declval<Args>()...))
         dispatch(policies_placeholder<ExecutionPolicy,Execs...>&&, Args&&... args) const 
         {
             if (is_policy<ExecutionPolicy>())
@@ -97,10 +100,10 @@ class __dynamic_execution_policy
         // algorithm dispatch
         //
         template<class... Args>
-        decltype(declval<sequential_execution_policy>().dispatch(declval<Args>()...))
+        decltype(declval<DefaultPolicy>().dispatch(declval<Args>()...))
         dispatch(Args&&... args) const 
         {
-            return dispatch(policies_placeholder<Policies...>{}, forward<Args>(args)...);
+            return dispatch(policies_placeholder<DefaultPolicy, Policies...>{}, forward<Args>(args)...);
         }
 };
 
@@ -146,8 +149,8 @@ struct execution_policy
         // algorithm dispatch
         //
         template<class... Args>
-        decltype(declval<sequential_execution_policy>().dispatch(declval<Args>()...))
-        dispatch(Args&&... args) const 
+        auto dispatch(Args&&... args) const  ->
+        decltype(policy_.dispatch(forward<Args>(args)...))
         {
             return policy_.dispatch(forward<Args>(args)...);
         }
