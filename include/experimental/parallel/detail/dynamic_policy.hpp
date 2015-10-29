@@ -36,7 +36,8 @@ class __dynamic_execution_policy
         template<typename ExecutionPolicy>
         __dynamic_execution_policy(const ExecutionPolicy& exec) 
         {
-            (*reinterpret_cast<ExecutionPolicy*>(&policy_storage_)) = exec;
+            auto ptr = reinterpret_cast<ExecutionPolicy*>(&policy_storage_);
+            new (ptr) ExecutionPolicy(exec);
             policy_type_ = &typeid(ExecutionPolicy);
         }
         /* eg: use default copy/move ctors, dtors, and assignment ops , should be okay*/
