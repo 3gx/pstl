@@ -4,89 +4,113 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
-class dynamic_execution_policy
+template<int i, int... js>
+struct __constexpr_max
+{
+    static const int value = i < __constexpr_max<js...>::value ? __constexpr_max<js...>::value : i;
+};
+
+
+template<int i>
+struct __constexpr_max<i>
+{
+    static const int value = i;
+};
+
+
+template<class... Policies>
+class __dynamic_execution_policy
 {
     private:
-        union 
-        {
-            sequential_execution_policy seq_;
-            parallel_execution_policy   par_;
-        };
-        enum class policy_type
-        {
-            SEQ, PAR
-        } policy_;
+        typedef typename std::aligned_storage<
+            __constexpr_max<sizeof(Policies)...>::value
+            >::type policy_storage_type;
+        policy_storage_type policy_storage_;
+        const type_info *policy_type_;
 
-    public:
-        dynamic_execution_policy(const sequential_execution_policy& seq) : seq_(seq), policy_(policy_type::SEQ) {}
-        dynamic_execution_policy(const   parallel_execution_policy& par) : par_(par), policy_(policy_type::PAR) {}
-        dynamic_execution_policy(const    dynamic_execution_policy&) = default;
-        dynamic_execution_policy& operator=(const dynamic_execution_policy&) = default;
+        template<class ExecutionPolicy>
+        bool is_policy() const { return typeid(ExecutionPolicy) == *policy_type_; }
 
-        bool is_seq() const { return policy_ == policy_type::SEQ; }
-        bool is_par() const { return policy_ == policy_type::PAR; }
+    public:  
+
+        template<typename ExecutionPolicy>
+        __dynamic_execution_policy(const ExecutionPolicy& exec) 
+        {
+            (*reinterpret_cast<ExecutionPolicy*>(&policy_storage_)) = exec;
+            policy_type_ = &typeid(ExecutionPolicy);
+        }
+        /* eg: use default copy/move ctors, dtors, and assignment ops , should be okay*/
 
         template<class ExecutionPolicy>
         typename enable_if<is_execution_policy<ExecutionPolicy>::value, ExecutionPolicy*>::type
         get()  __NOEXCEPT
         {
-            ExecutionPolicy* dummy = nullptr;
-            return get_helper(*dummy);
+            if (!is_policy<ExecutionPolicy>())
+            {
+                return nullptr;
+            }
+            return reinterpret_cast<ExecutionPolicy*>(&policy_storage_);
         }
         template<class ExecutionPolicy>
         typename enable_if<is_execution_policy<ExecutionPolicy>::value, const ExecutionPolicy*>::type
         get()  const __NOEXCEPT
         {
-            ExecutionPolicy* dummy = nullptr;
-            return get_helper(dummy);
+            if (!is_policy<ExecutionPolicy>())
+            {
+                return nullptr;
+            }
+            return reinterpret_cast<const ExecutionPolicy*>(&policy_storage_);
         }
 
-        // sequential_execution_policy  get_helper
-        //
-        sequential_execution_policy* get_helper(sequential_execution_policy*) __NOEXCEPT
-        {
-            return is_seq() ? &seq_ : nullptr;
-        }
-        const sequential_execution_policy* get_helper(sequential_execution_policy*) const __NOEXCEPT
-        {
-            return is_seq() ? &seq_ : nullptr;
-        }
-
-        // parallel_execution_policy  get_helper
-        //
-        parallel_execution_policy* get_helper(parallel_execution_policy*) __NOEXCEPT
-        {
-            return is_par() ? &par_ : nullptr;
-        }
-        const parallel_execution_policy* get_helper(parallel_execution_policy*) const __NOEXCEPT
-        {
-            return is_par() ? &par_ : nullptr;
-        }
-
-        // type information
-        //
         const type_info& type() const __NOEXCEPT
         {
-            if (is_par()) return typeid(parallel_execution_policy);
-            /* if (is_seq()) */
-                return typeid(sequential_execution_policy);
+            return *policy_type_;
         }
 
+    private:
+        template<class...>
+        struct policies_placeholder{};
+
+        template<class... Args>
+        decltype(declval<sequential_execution_policy>().dispatch(declval<Args>()...))
+        dispatch(policies_placeholder<>&&, Args&&... args) const 
+        {
+            return get<sequential_execution_policy>()->dispatch(forward<Args>(args)...);
+        }
+
+        template<class ExecutionPolicy, class... Execs, class... Args>
+        decltype(declval<sequential_execution_policy>().dispatch(declval<Args>()...))
+        dispatch(policies_placeholder<ExecutionPolicy,Execs...>&&, Args&&... args) const 
+        {
+            if (is_policy<ExecutionPolicy>())
+            {
+                return get<ExecutionPolicy>()->dispatch(forward<Args>(args)...);
+            }
+            else
+            {
+                return dispatch(policies_placeholder<Execs...>{}, forward<Args>(args)...);
+            }
+        }
+
+    public:
+                
         // algorithm dispatch
         //
-        template<class Functor, class... Args>
-        auto dispatch(Functor&& f, Args&&... args) const -> decltype(seq_.dispatch(forward<Functor>(f), forward<Args>(args)...))
+        template<class... Args>
+        decltype(declval<sequential_execution_policy>().dispatch(declval<Args>()...))
+        dispatch(Args&&... args) const 
         {
-            if (is_par()) return par_.dispatch(forward<Functor>(f), forward<Args>(args)...);
-            /* if (is_seq()) */
-                return seq_.dispatch(forward<Functor>(f), forward<Args>(args)...);
+            return dispatch(policies_placeholder<Policies...>{}, forward<Args>(args)...);
         }
 };
 
-class execution_policy
+struct execution_policy
 {
     private:
-        dynamic_execution_policy policy_;
+        __dynamic_execution_policy<
+            sequential_execution_policy,
+            parallel_execution_policy
+        > policy_;
     public:
         // 2.7.1, execution_policy construct/assign
         template<class ExecutionPolicy> 
@@ -101,7 +125,6 @@ class execution_policy
             policy_ = policy;
             return *this;
         }
-
 
         // 2.7.2, execution_policy object access
         const type_info& type() const __NOEXCEPT
@@ -122,11 +145,11 @@ class execution_policy
 
         // algorithm dispatch
         //
-        template<class Functor, class... Args>
-        auto dispatch(Functor&& f, Args&&... args)  ->
-        decltype(declval<sequential_execution_policy>().dispatch(forward<Functor>(f), forward<Args>(args)...))
+        template<class... Args>
+        decltype(declval<sequential_execution_policy>().dispatch(declval<Args>()...))
+        dispatch(Args&&... args) const 
         {
-            return policy_.dispatch(forward<Functor>(f), forward<Args>(args)...);
+            return policy_.dispatch(forward<Args>(args)...);
         }
 };
 
