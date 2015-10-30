@@ -1,71 +1,44 @@
 #pragma once 
+
+#include "variant_lite.hpp"
+
 namespace std          {
 namespace experimental {
 namespace parallel     {
 inline namespace v1    {
-
-template<int i, int... js>
-struct __constexpr_max
-{
-    static const int value = i < __constexpr_max<js...>::value ? __constexpr_max<js...>::value : i;
-};
-
-
-template<int i>
-struct __constexpr_max<i>
-{
-    static const int value = i;
-};
 
 
 template<class DefaultPolicy, class... Policies>
 class __dynamic_execution_policy
 {
     private:
-        typedef typename std::aligned_storage<
-            __constexpr_max<sizeof(DefaultPolicy), sizeof(Policies)...>::value
-            >::type policy_storage_type;
-        policy_storage_type policy_storage_;
-        const type_info *policy_type_;
+        __variant_lite<DefaultPolicy, Policies...> policy_;
 
         template<class ExecutionPolicy>
-        bool is_policy() const { return typeid(ExecutionPolicy).hash_code() == policy_type_->hash_code(); }
+        bool is_policy() const { return policy_.template is_type<ExecutionPolicy>(); }
 
     public:  
 
         template<typename ExecutionPolicy>
-        __dynamic_execution_policy(const ExecutionPolicy& exec) 
-        {
-            auto ptr = reinterpret_cast<ExecutionPolicy*>(&policy_storage_);
-            new (ptr) ExecutionPolicy(exec);
-            policy_type_ = &typeid(ExecutionPolicy);
-        }
-        /* eg: use default copy/move ctors, dtors, and assignment ops , should be okay*/
+        __dynamic_execution_policy(const ExecutionPolicy& exec)  : policy_(exec)
+        {}
 
         template<class ExecutionPolicy>
         typename enable_if<is_execution_policy<ExecutionPolicy>::value, ExecutionPolicy*>::type
         get()  __NOEXCEPT
         {
-            if (!is_policy<ExecutionPolicy>())
-            {
-                return nullptr;
-            }
-            return reinterpret_cast<ExecutionPolicy*>(&policy_storage_);
+            return policy_.template get<ExecutionPolicy>();
         }
         template<class ExecutionPolicy>
         typename enable_if<is_execution_policy<ExecutionPolicy>::value, const ExecutionPolicy*>::type
         get()  const __NOEXCEPT
         {
-            if (!is_policy<ExecutionPolicy>())
-            {
-                return nullptr;
-            }
-            return reinterpret_cast<const ExecutionPolicy*>(&policy_storage_);
+            return policy_.template get<ExecutionPolicy>();
         }
 
         const type_info& type() const __NOEXCEPT
         {
-            return *policy_type_;
+            return policy_.type();
         }
 
     private:
