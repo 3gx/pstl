@@ -2,6 +2,7 @@
 
 #include <typeinfo>
 #include <memory>
+#include <cassert>
 
 namespace std          {
 namespace experimental {
@@ -41,7 +42,6 @@ class __variant_lite
                 >::type;
         storage_type storage_;
         const type_info *type_;
-            
 
         template<class...>
         struct type_placeholder{};
@@ -49,11 +49,26 @@ class __variant_lite
         using all_types = type_placeholder<Ts...>;
 
         template<typename V>
-        void create(const V& v)
+        void construct(const V& v)
         {
             auto ptr = reinterpret_cast<V*>(&storage_);
             new (ptr) V(v);
             type_ = &typeid(v);
+        }
+
+        void construct(type_placeholder<>&&, const __variant_lite&)
+        { assert(false); }
+        template<class V, class... Vs>
+        void construct(type_placeholder<V,Vs...>&&, const __variant_lite& rhs)
+        {
+            if (rhs.is_type<V>())
+            {
+                construct(*rhs.get<V>());
+            }
+            else
+            {
+                construct(type_placeholder<Vs...>{}, rhs);
+            }
         }
 
         
@@ -61,26 +76,23 @@ class __variant_lite
 
         template<class V>
         bool is_type() const 
-        { return 
-            nullptr != type_ && 
-            typeid(V).hash_code() == type_->hash_code(); 
+        {
+            return 
+                typeid(V).hash_code() == type_->hash_code(); 
         }
-
-        __variant_lite() : type_{nullptr} {}
 
         template<typename V>
         explicit __variant_lite(const V& v)
-            : __variant_lite()
         {
             static_assert(
                     __constexpr_or<is_same<V,Ts>::value...>::value, 
                     "Type mismatch in __variant_lite ctor");
-            create(v);
+            construct(v);
         }
 
-        __variant_lite(const __variant_lite& rhs) : __variant_lite()
+        explicit __variant_lite(const __variant_lite& rhs) 
         {
-            this->operator=(rhs);
+            construct(all_types{}, rhs);
         }
 
         template<class V>
@@ -112,15 +124,13 @@ class __variant_lite
 
 
         void destroy(type_placeholder<>&&)
-        {
-        }
+        { assert(false); }
         template<class V, class... Vs>
         void destroy(type_placeholder<V,Vs...>&&)
         {
             if (is_type<V>())
             {
                 get<V>()->~V();
-                type_ = nullptr;
             }
             else
             {
@@ -130,9 +140,7 @@ class __variant_lite
 
 
         void copy(type_placeholder<>&&, const __variant_lite&)
-        {
-            destroy(all_types{});
-        }
+        { assert(false); }
         template<class V, class... Vs>
         void copy(type_placeholder<V,Vs...>&&, const __variant_lite& rhs)
         {
@@ -166,7 +174,7 @@ class __variant_lite
             else
             {
                 destroy(all_types{});
-                create(rhs);
+                construct(rhs);
             }
             return *this;
         }
