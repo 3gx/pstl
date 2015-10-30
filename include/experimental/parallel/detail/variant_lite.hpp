@@ -8,13 +8,24 @@ namespace experimental {
 namespace parallel     {
 inline namespace v1    {
 
+template<bool I, bool... Js>
+struct __constexpr_or
+{
+    static constexpr auto value = I | __constexpr_or<Js...>::value;
+};
+template<bool I>
+struct __constexpr_or<I>
+{
+    static constexpr auto value = I;
+};
+
+
+
 template<int i, int... js>
 struct __constexpr_max
 {
     static const auto value = i < __constexpr_max<js...>::value ? __constexpr_max<js...>::value : i;
 };
-
-
 template<int i>
 struct __constexpr_max<i>
 {
@@ -44,6 +55,7 @@ class __variant_lite
             new (ptr) V(v);
             type_ = &typeid(v);
         }
+
         
     public:
 
@@ -57,8 +69,12 @@ class __variant_lite
         __variant_lite() : type_{nullptr} {}
 
         template<typename V>
-        __variant_lite(const V& v)  : __variant_lite()
+        explicit __variant_lite(const V& v)
+            : __variant_lite()
         {
+            static_assert(
+                    __constexpr_or<is_same<V,Ts>::value...>::value, 
+                    "Type mismatch in __variant_lite ctor");
             create(v);
         }
 
@@ -140,6 +156,9 @@ class __variant_lite
         template<typename V>
         __variant_lite& operator=(const V& rhs)
         {
+            static_assert(
+                    __constexpr_or<is_same<V,Ts>::value...>::value, 
+                    "Type mismatch in __variant_lite copy asignment operator");
             if (is_type<V>())
             {
                 *get<V>() = rhs;
