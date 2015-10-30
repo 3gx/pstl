@@ -29,7 +29,7 @@ class __dynamic_execution_policy
         const type_info *policy_type_;
 
         template<class ExecutionPolicy>
-        bool is_policy() const { return typeid(ExecutionPolicy) == *policy_type_; }
+        bool is_policy() const { return typeid(ExecutionPolicy).hash_code() == policy_type_->hash_code(); }
 
     public:  
 
